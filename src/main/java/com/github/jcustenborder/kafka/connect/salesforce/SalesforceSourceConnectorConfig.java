@@ -25,7 +25,7 @@ import org.apache.kafka.common.config.ConfigDef.Type;
 import java.util.Map;
 
 
-class SalesforceSourceConnectorConfig extends AbstractConfig {
+public class SalesforceSourceConnectorConfig extends AbstractConfig {
 
   public static final String USERNAME_CONF = "salesforce.username";
   public static final String PASSWORD_CONF = "salesforce.password";
