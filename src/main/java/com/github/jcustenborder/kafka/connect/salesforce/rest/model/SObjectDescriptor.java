@@ -485,7 +485,7 @@ public class SObjectDescriptor {
 
     //"relationshipOrder": null,
     @Key("relationshipOrder")
-    String relationshipOrder;
+    Integer relationshipOrder;
 
     //"restrictedDelete": false,
     @Key("restrictedDelete")
@@ -860,11 +860,11 @@ public class SObjectDescriptor {
       this.relationshipName = relationshipName;
     }
 
-    public String relationshipOrder() {
+    public Integer relationshipOrder() {
       return this.relationshipOrder;
     }
 
-    public void relationshipOrder(String relationshipOrder) {
+    public void relationshipOrder(Integer relationshipOrder) {
       this.relationshipOrder = relationshipOrder;
     }
 
