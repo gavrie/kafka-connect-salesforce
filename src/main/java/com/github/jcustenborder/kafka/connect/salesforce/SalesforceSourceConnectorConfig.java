@@ -22,6 +22,7 @@ import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Importance;
 import org.apache.kafka.common.config.ConfigDef.Type;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -43,6 +44,7 @@ public class SalesforceSourceConnectorConfig extends AbstractConfig {
   public static final String VERSION_CONF = "salesforce.version";
 
   public static final String SALESFORCE_OBJECT_CONF = "salesforce.object";
+  public static final String SALESFORCE_OBJECT_FIELDS_CONF = "salesforce.object.fields";
   public static final String KAFKA_TOPIC_LOWERCASE_CONF = "kafka.topic.lowercase";
   public static final String KAFKA_TOPIC_CONF = "kafka.topic";
 
@@ -65,6 +67,7 @@ public class SalesforceSourceConnectorConfig extends AbstractConfig {
   static final String SALESFORCE_PUSH_TOPIC_NOTIFY_DELETE_DOC = "Flag to determine if the PushTopic should respond to deletes.";
   static final String SALESFORCE_PUSH_TOPIC_NOTIFY_UNDELETE_DOC = "Flag to determine if the PushTopic should respond to undeletes.";
   static final String SALESFORCE_OBJECT_DOC = "The Salesforce object to create a topic for.";
+  static final String SALESFORCE_OBJECT_FIELDS_DOC = "<TODO>";
   static final String KAFKA_TOPIC_DOC = "The Kafka topic to write the SalesForce data to. This is a template driven by the " +
       "data returned by Salesforce. Any field in the schema can be used but you should always pick a value that is guarenteed to be there. " +
       "`" + SObjectHelper.FIELD_EVENT_TYPE + "` and `" + SObjectHelper.FIELD_OBJECT_TYPE + "` are two metadata fields that " +
@@ -83,6 +86,7 @@ public class SalesforceSourceConnectorConfig extends AbstractConfig {
     this.salesForcePushTopicName = this.getString(SALESFORCE_PUSH_TOPIC_NAME_CONF);
     this.salesForcePushTopicCreate = this.getBoolean(SALESFORCE_PUSH_TOPIC_CREATE_CONF);
     this.salesForceObject = this.getString(SALESFORCE_OBJECT_CONF);
+    this.salesForceObjectFields = this.getList(SALESFORCE_OBJECT_FIELDS_CONF);
     this.connectTimeout = this.getLong(CONNECTION_TIMEOUT_CONF);
     this.salesForcePushTopicNotifyCreate = this.getBoolean(SALESFORCE_PUSH_TOPIC_NOTIFY_CREATE_CONF);
     this.salesForcePushTopicNotifyUpdate = this.getBoolean(SALESFORCE_PUSH_TOPIC_NOTIFY_UPDATE_CONF);
@@ -107,6 +111,7 @@ public class SalesforceSourceConnectorConfig extends AbstractConfig {
         .define(INSTANCE_CONF, Type.STRING, "", Importance.HIGH, INSTANCE_DOC)
         .define(CURL_LOGGING_CONF, Type.BOOLEAN, false, Importance.LOW, CURL_LOGGING_DOC)
         .define(SALESFORCE_OBJECT_CONF, Type.STRING, Importance.HIGH, SALESFORCE_OBJECT_DOC)
+        .define(SALESFORCE_OBJECT_FIELDS_CONF, Type.LIST, Importance.HIGH, SALESFORCE_OBJECT_FIELDS_DOC)
         .define(KAFKA_TOPIC_CONF, Type.STRING, Importance.HIGH, KAFKA_TOPIC_DOC)
         .define(KAFKA_TOPIC_LOWERCASE_CONF, Type.BOOLEAN, true, Importance.HIGH, KAFKA_TOPIC_LOWERCASE_DOC)
         .define(CONNECTION_TIMEOUT_CONF, Type.LONG, 30000L, ConfigDef.Range.between(5 * 1000L, 600 * 1000L), Importance.LOW, CONNECTION_TIMEOUT_DOC)
@@ -131,6 +136,7 @@ public class SalesforceSourceConnectorConfig extends AbstractConfig {
   public final String salesForcePushTopicName;
   public final boolean salesForcePushTopicCreate;
   public final String salesForceObject;
+  public final List<String> salesForceObjectFields;
   public final long connectTimeout;
   public final boolean salesForcePushTopicNotifyCreate;
   public final boolean salesForcePushTopicNotifyUpdate;

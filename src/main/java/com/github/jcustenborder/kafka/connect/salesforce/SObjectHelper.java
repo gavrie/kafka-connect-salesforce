@@ -38,6 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 
 class SObjectHelper {
   static final Parser PARSER;
@@ -66,6 +70,34 @@ class SObjectHelper {
         "pushTopic",
         this.config.salesForcePushTopicName
     );
+  }
+
+  public static Set<String> usedFields(SObjectDescriptor sObjectDescriptor, Set<String> specifiedFields) {
+
+    Set<String> allFields = new LinkedHashSet<>();
+    for (SObjectDescriptor.Field f : sObjectDescriptor.fields()) {
+      if (SObjectHelper.isTextArea(f)) {
+        continue;
+      }
+      allFields.add(f.name());
+    }
+
+    Set<String> fields = new LinkedHashSet<>(allFields);
+
+    // Limit the fields according to a list specified in the configuration.
+    // This is needed due to the SOQL query limit of 1300 characters:
+    // https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/limits.htm
+    if (specifiedFields.size() > 0) {
+      Set<String> unknownFields = new HashSet<>(specifiedFields);
+      unknownFields.removeAll(allFields);
+      if (unknownFields.size() > 0) {
+        throw new NoSuchElementException(String.format(
+                "Unknown usedFields specified in configuration: %s", unknownFields));
+      }
+      fields.retainAll(specifiedFields);
+    }
+
+    return fields;
   }
 
   public static boolean isTextArea(SObjectDescriptor.Field field) {
@@ -158,13 +190,15 @@ class SObjectHelper {
     return builder.build();
   }
 
-  public static Schema valueSchema(SObjectDescriptor descriptor) {
+  public static Schema valueSchema(SObjectDescriptor descriptor, Set<String> specifiedFields) {
     String name = String.format("%s.%s", SObjectHelper.class.getPackage().getName(), descriptor.name());
     SchemaBuilder builder = SchemaBuilder.struct();
     builder.name(name);
 
+    Set<String> fields = usedFields(descriptor, specifiedFields);
+
     for (SObjectDescriptor.Field field : descriptor.fields()) {
-      if (isTextArea(field)) {
+      if (!fields.contains(field.name())) {
         continue;
       }
       Schema schema = schema(field);

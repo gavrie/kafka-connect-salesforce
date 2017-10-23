@@ -95,13 +95,7 @@ public class SalesforceSourceConnector extends SourceConnector {
       pushTopic = new PushTopic();
       pushTopic.name(this.config.salesForcePushTopicName);
 
-      Set<String> fields = new LinkedHashSet<>();
-      for (SObjectDescriptor.Field f : sObjectDescriptor.fields()) {
-        if (SObjectHelper.isTextArea(f)) {
-          continue;
-        }
-        fields.add(f.name());
-      }
+      Set<String> fields = SObjectHelper.usedFields(sObjectDescriptor, new LinkedHashSet<>(this.config.salesForceObjectFields));
 
       String query = String.format(
           "SELECT %s FROM %s",

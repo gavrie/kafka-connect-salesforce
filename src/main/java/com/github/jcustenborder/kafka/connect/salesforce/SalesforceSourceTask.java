@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,7 +135,7 @@ public class SalesforceSourceTask extends SourceTask {
     Preconditions.checkNotNull(this.descriptor, "Could not find descriptor for '%s'", this.config.salesForceObject);
 
     this.keySchema = SObjectHelper.keySchema(this.descriptor);
-    this.valueSchema = SObjectHelper.valueSchema(this.descriptor);
+    this.valueSchema = SObjectHelper.valueSchema(this.descriptor, new LinkedHashSet<>(config.salesForceObjectFields));
     this.topicChannelListener = new TopicChannelMessageListener(
         this.messageQueue, this.config, this.keySchema, this.valueSchema
     );
